@@ -33,10 +33,16 @@ impl BaseQueryHandler<GetClientQuery, GetClientQueryResponse>
             .first::<Client>(context);
 
         if query.is_err() {
-            return Err(QueryError::Internal);
+            return match query {
+                Err(e) => match e {
+                    diesel::NotFound => Err(QueryError::NotFound),
+                    _ => Err(QueryError::Internal),
+                },
+                _ => Err(QueryError::Internal),
+            };
         }
 
-        let response = GetClientQueryResponse::from(&query.unwrap());
+        let response: GetClientQueryResponse = query.unwrap().into();
 
         Ok(response)
     }

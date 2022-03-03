@@ -9,8 +9,8 @@ pub struct GetClientQueryResponse {
     pub document_number: String,
 }
 
-impl From<&Client> for GetClientQueryResponse {
-    fn from(item: &Client) -> Self {
+impl From<Client> for GetClientQueryResponse {
+    fn from(item: Client) -> Self {
         GetClientQueryResponse {
             firstname: item.get_firstname(),
             lastname: item.get_lastname(),
