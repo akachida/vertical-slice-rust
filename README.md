@@ -7,6 +7,7 @@ plus a basic CQRS with different DB resource, using Rust language.
 
 ## TO-DO
 
+- [ ] Docker
 - [ ] Better custom errors
 - [ ] Better error handling
 - [ ] Middlewares (Error handling, Auth, Validations...)
@@ -19,4 +20,4 @@ plus a basic CQRS with different DB resource, using Rust language.
 - [ ] Try some events
 - [ ] Try some crosscutting (MQ, Storage, Functions...)
 - [ ] Try scheduled tasks and recurrent jobs
-- [ ] Try some cache (noSQL)
+- [ ] Try some cache (noSQL or something)
