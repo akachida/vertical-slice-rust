@@ -2,7 +2,8 @@
 
 
 This is a simple example on how to implement the Vertical Slice Architecture,
-plus a basic CQRS with different DB resource, using Rust language.
+plus a basic CQRS, using Rust language. It's a simplistic way to do it, only
+to provide a little directions on how you can do it.
 
 
 ## TO-DO
