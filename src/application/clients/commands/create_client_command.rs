@@ -1,5 +1,5 @@
 use diesel::{Insertable, RunQueryDsl};
-use serde::{Deserialize};
+use serde::Deserialize;
 use crate::core::base_handler::BaseCommandHandler;
 use crate::infrastructure::data::db_manager::DbManager;
 use crate::schema::clients;

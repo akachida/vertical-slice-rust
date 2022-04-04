@@ -12,9 +12,9 @@ pub struct GetClientQueryResponse {
 impl From<Client> for GetClientQueryResponse {
     fn from(item: Client) -> Self {
         GetClientQueryResponse {
-            firstname: item.get_firstname().to_string(),
-            lastname: item.get_lastname().to_string(),
-            document_number: item.get_document_number().to_string(),
+            firstname: item.firstname().clone(),
+            lastname: item.lastname().clone(),
+            document_number: item.document_number().clone(),
         }
     }
 }

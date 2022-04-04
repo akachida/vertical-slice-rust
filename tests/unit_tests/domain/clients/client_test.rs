@@ -8,9 +8,9 @@ mod tests {
         let client = Client::new();
 
         // assert
-        assert_eq!(client.get_document_number().to_string(), "".to_string());
-        assert_eq!(client.get_firstname().to_string(), "".to_string());
-        assert_eq!(client.get_lastname().to_string(), "".to_string());
+        assert_eq!(client.document_number().to_string(), "".to_string());
+        assert_eq!(client.firstname().to_string(), "".to_string());
+        assert_eq!(client.lastname().to_string(), "".to_string());
     }
 
     #[test]
@@ -23,7 +23,7 @@ mod tests {
         client.set_firstname(sud.clone());
 
         // assert
-        assert_eq!(sud, client.get_firstname().to_string());
+        assert_eq!(sud, client.firstname().to_string());
     }
 
     // ... continue the tests over all properties

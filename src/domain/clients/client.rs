@@ -1,7 +1,9 @@
 use diesel::Queryable;
 use uuid::Uuid;
+use crate::schema::clients;
 
-#[derive(Debug, Clone, Queryable)]
+#[derive(Debug, Clone, Queryable, Insertable)]
+#[table_name="clients"]
 pub struct Client {
     id: Uuid,
     firstname: String,
@@ -19,14 +21,14 @@ impl Client {
         }
     }
 
-    pub fn get_id(&self) -> Uuid { self.id }
+    pub fn id(&self) -> &Uuid { &self.id }
 
-    pub fn get_firstname(&self) -> &String { &self.firstname }
+    pub fn firstname(&self) -> &String { &self.firstname }
     pub fn set_firstname(&mut self, value: String) { self.firstname = value; }
 
-    pub fn get_lastname(&self) -> &String { &self.lastname }
+    pub fn lastname(&self) -> &String { &self.lastname }
     pub fn set_lastname(&mut self, value: String) { self.lastname = value; }
 
-    pub fn get_document_number(&self) -> &String { &self.document_number }
+    pub fn document_number(&self) -> &String { &self.document_number }
     pub fn set_document_number(&mut self, value: String) { self.document_number = value; }
 }
