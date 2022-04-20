@@ -7,8 +7,20 @@ edition = "2021"
 actix-web = "3"
 dotenv = "0.15.0"
 diesel = { version = "1.4.4", features = ["postgres", "r2d2", "uuidv07"] }
+diesel_migrations = "1.4.0"
 cqrs-es = "0.2.0"
 async-trait = "0.1.51"
 serde = { version = "1.0.130", features = ["derive"] }
 serde_json = "1.0"
 uuid = { version = "0.8", features = ["serde", "v4"] }
+
+[dev-dependencies]
+inventory = "0.2.2"
+
+[features]
+integration_tests = []
+
+[[test]]
+name = "tests"
+path = "tests/main.rs"
+harness = false

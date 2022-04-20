@@ -23,7 +23,8 @@ async fn execute(uuid: web::Path<String>) -> Result<HttpResponse> {
             Ok(HttpResponse::Ok().body(serde_json::to_string(&data).unwrap().to_string())),
         Err(e) => match e {
             QueryError::Internal => Ok(HttpResponse::InternalServerError().body(e.to_string())),
-            QueryError::NotFound => Ok(HttpResponse::NotFound().body(e.to_string()))
+            QueryError::NotFound => Ok(HttpResponse::NotFound().body(e.to_string())),
+            QueryError::InvalidParameter => Ok(HttpResponse::BadRequest().body(e.to_string()))
         }
     }
 }

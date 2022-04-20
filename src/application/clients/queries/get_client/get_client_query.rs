@@ -1,5 +1,5 @@
 use diesel::{EqAll, QueryDsl, RunQueryDsl};
-use serde::{Deserialize};
+use serde::Deserialize;
 use uuid::Uuid;
 
 use crate::application::clients::queries::get_client::get_client_query_response::GetClientQueryResponse;

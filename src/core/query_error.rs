@@ -4,6 +4,7 @@ use std::{error, fmt};
 pub enum QueryError {
     Internal,
     NotFound,
+    InvalidParameter,
 }
 
 impl fmt::Display for QueryError {
@@ -11,6 +12,7 @@ impl fmt::Display for QueryError {
         let description = match *self {
             QueryError::Internal => "Something bad happened",
             QueryError::NotFound => "No results were found",
+            QueryError::InvalidParameter => "Invalid parameters",
         };
 
         f.write_str(description)

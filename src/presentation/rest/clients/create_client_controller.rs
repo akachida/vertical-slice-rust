@@ -11,8 +11,9 @@ pub async fn execute(command: web::Json<CreateClientCommand>)
     -> Result<HttpResponse>
 {
     let handler = CreateClientCommandHandler::new();
+    let response = handler.handle(command.deref());
 
-    if handler.handle(command.deref()) {
+    if response.is_ok() {
         return Ok(HttpResponse::Created().body("201 Created"));
     }
 
