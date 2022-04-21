@@ -5,6 +5,10 @@ This is a simple example on how to implement the Vertical Slice Architecture,
 plus a basic CQRS, using Rust language. It's a simplistic way to do it, only
 to provide a little directions on how you can do it.
 
+Running tests:
+```
+cargo test --package vsa-rust --test tests --all-features
+```
 
 ## TO-DO
 
