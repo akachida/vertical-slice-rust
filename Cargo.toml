@@ -1,0 +1,52 @@
+[package]
+name = "backend-api"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = [".", "entity", "migration"]
+
+[dependencies]
+actix-web = "4"
+actix-jwt-auth-middleware = "0.1.2"
+argon2 = { version = "0.4.1", features = ["std"] }
+async-trait = "0.1.56"
+chrono = "0.4.19"
+dotenv = "0.15"
+email-address-parser = "1.0.3"
+env_logger = "0.9.0"
+futures = "0.3"
+jsonwebtoken = "8.1.1"
+log = "0.4.17"
+serde = { version = "1.0.130", features = ["derive"] }
+serde_json = "1.0"
+sha3 = "0.10.1"
+uuid = { version = "0.8", features = ["serde", "v4"] }
+thiserror = "1.0.31"
+
+entity = { path = "entity" }
+migration = { path = "migration" }
+
+[dependencies.sea-orm]
+version = "^0.9.1"
+features = [
+    "debug-print",
+    "runtime-actix-native-tls",
+    "sqlx-postgres",
+    "macros",
+]
+
+[dependencies.actix-web-httpauth]
+git = "https://github.com/actix/actix-extras"
+tag = "httpauth-v0.6.0"
+
+[dev-dependencies]
+async-std = { version = "^1", features = ["attributes", "tokio1"] }
+
+[features]
+integration_tests = []
+
+[[test]]
+name = "tests"
+path = "tests/main.rs"
+harness = false
