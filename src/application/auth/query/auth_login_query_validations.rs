@@ -17,6 +17,8 @@ impl RequestValidation for AuthLoginQuery {
             error_messages.append(&mut vec!["Password is required".to_string()]);
         }
 
+        // TODO: set more validations (ex: min and max length, char type, especial, etc.)
+
         if !error_messages.is_empty() {
             return Err(ApplicationErrorResponse {
                 message: "Username or password was not valid".to_string(),

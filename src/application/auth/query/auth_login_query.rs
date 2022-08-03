@@ -4,12 +4,12 @@ use serde::{Deserialize, Serialize};
 use crate::{
     domain::user::user::UserTrait,
     infrastructure::{
-        security::jwt::jwt_helper::JwtHelper,
         persistence::{database_context::ReadDbContext, database_manager::DatabaseManager},
         rest::{
             application_error_response::ApplicationErrorResponse,
             request_validation::RequestValidation,
         },
+        security::jwt::jwt_helper::JwtHelper,
     },
 };
 

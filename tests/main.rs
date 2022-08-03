@@ -25,6 +25,8 @@ async fn main() {
     // run each test
     auth_login_query_test::valid_auth_login_query_returns_token(conn).await;
     auth_login_query_test::invalid_credentials_returns_401_unauthorized().await;
+    auth_login_query_test::invalid_request_input_dont_pass_validation().await;
+    auth_login_query_test::user_not_found_or_invalid_credentials_on_database().await;
 
     teardown(context).await;
 }

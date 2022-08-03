@@ -4,6 +4,12 @@ This is an example on how to implement the Vertical Slice Architecture,
 plus a basic CQRS, using Rust language. It's a simplistic way to do it, only
 to provide a little directions on how you can do it and use it as a template to start a web api project.
 
+Running application:
+
+```bash
+cargo run
+```
+
 ## Tests
 
 You can add an `RUST_LOG=debug` before the command to see more informations about the tests
@@ -20,12 +26,18 @@ Running unit tests:
 cargo test --package backend-api --lib --all-features
 ```
 
+Running all tests:
+
+```bash
+cargo test --all-features
+```
+
 ## TO-DO
 
 - [ ] Docker
 - [x] Better custom errors
 - [x] Better error handling
-- [x] Middlewares (Error handling, Auth, Validations...)
+- [x] Middleware (Error handling, Auth, Validations...)
 - [x] Separate C/Q validations from C/Q Handlers
 
 ## Give it a try (improvements)
