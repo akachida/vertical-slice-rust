@@ -13,10 +13,10 @@ pub struct Model {
     pub email: String,
     pub role_id: i16,
     pub hashed_password: String,
-    pub is_active: Option<bool>,
-    pub is_admin: Option<bool>,
+    pub is_active: bool,
+    pub is_admin: bool,
     pub updated_at: Option<DateTimeUtc>,
-    pub created_at: Option<DateTimeUtc>,
+    pub created_at: DateTimeUtc,
     pub last_login_at: Option<DateTimeUtc>,
 }
 
@@ -26,7 +26,7 @@ pub enum Relation {
         belongs_to = "super::role::Entity",
         from = "Column::RoleId",
         to = "super::role::Column::Id",
-        on_update = "NoAction",
+        on_update = "Cascade",
         on_delete = "Restrict"
     )]
     Role,

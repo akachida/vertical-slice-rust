@@ -1,8 +1,7 @@
 use crate::{
     application::auth::query::auth_login_query::AuthLoginQuery,
-    infrastructure::rest::{
-        application_error_response::ApplicationErrorResponse, request_validation::RequestValidation,
-    },
+    infrastructure::application_error_response::ApplicationErrorResponse,
+    infrastructure::rest::request_validation::RequestValidation,
 };
 
 impl RequestValidation for AuthLoginQuery {
@@ -16,8 +15,6 @@ impl RequestValidation for AuthLoginQuery {
         if self.password.is_empty() {
             error_messages.append(&mut vec!["Password is required".to_string()]);
         }
-
-        // TODO: set more validations (ex: min and max length, char type, especial, etc.)
 
         if !error_messages.is_empty() {
             return Err(ApplicationErrorResponse {

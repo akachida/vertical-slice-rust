@@ -14,10 +14,11 @@ use crate::infrastructure::middleware::*;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    dotenv::dotenv().expect("Failed to open env file");
+    dotenv::dotenv().ok();
     env_logger::init();
 
     env::var("AUTH_SECRET").expect("env $AUTH_SECRET is not set");
+    env::var("REFRESH_TOKEN_SECRET").expect("env $REFRESH_TOKEN_SECRET is not set");
     env::var("DATABASE_URL_READ").expect("env $DATABASE_URL_READ is not set");
     env::var("DATABASE_URL_TEST").expect("env $DATABASE_URL_TEST is not set");
     env::var("TEST_DATABASE_NAME").expect("env $TEST_DATABASE_NAME is not set");
@@ -34,6 +35,10 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(middleware::Compress::default())
             .wrap(middleware::DefaultHeaders::new().add(("Content-type", "application/json")))
+            .wrap(middleware::DefaultHeaders::new().add(("Content-Security-Policy", "default-src 'self'")))
+            .wrap(middleware::DefaultHeaders::new().add(("X-Content-Type-Options", "nosniff")))
+            .wrap(middleware::DefaultHeaders::new().add(("X-Xss-Protection", "1; mode=block")))
+            .wrap(middleware::DefaultHeaders::new().add(("X-Permitted-Cross-Domain-Policies", "none")))
             .wrap(authentication_middleware::Authentication)
             .wrap(middleware::Logger::default())
             .service(web::scope("/api").configure(routes_config))
@@ -42,7 +47,7 @@ async fn main() -> std::io::Result<()> {
                 web::get().to(|| async { HttpResponse::NoContent().await }),
             )
     })
-    .bind(("localhost", 8080))?
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }

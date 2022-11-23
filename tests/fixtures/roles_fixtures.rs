@@ -7,9 +7,9 @@ pub async fn roles_fixtures(context: &DatabaseConnection) {
         id: Set(1),
         title: Set("Admin".to_string()),
         description: Set(None),
-        is_active: Set(Some(true)),
+        is_active: Set(true),
         updated_at: Set(None),
-        created_at: Set(Some(Utc::now())),
+        created_at: Set(Utc::now()),
     }
     .insert(context)
     .await

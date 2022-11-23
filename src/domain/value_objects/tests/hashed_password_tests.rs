@@ -9,7 +9,7 @@ use crate::domain::value_objects::hashed_password::{HashedPassword, HashedPasswo
 fn create_new_hashed_password_successfully() {
     // arrange
     dotenv::dotenv().ok();
-    let password = "112233";
+    let password = "1aBcD!fg2@";
     let salt = format!("{:x}", Sha3_256::digest(password));
     let secret = env::var("PASSWORD_SECRET").unwrap();
     let hasher = Argon2::new_with_secret(
@@ -33,7 +33,7 @@ fn create_new_hashed_password_successfully() {
 fn create_new_hashed_password_from_hash_successfully() {
     // arrange
     dotenv::dotenv().ok();
-    let hashed_password = HashedPassword::new("123123").unwrap();
+    let hashed_password = HashedPassword::new("1aBcD!fg2@").unwrap();
 
     // act
     let from_hash = HashedPassword::new_from_hash(&hashed_password.to_string()).unwrap();
@@ -71,11 +71,11 @@ fn fail_hashing_when_password_is_empty() {
 fn return_true_when_verify_password() {
     // arrange
     dotenv::dotenv().ok();
-    let password = "112233";
+    let password = "1aBcD!fg2@";
     let hashed_password = HashedPassword::new(password).unwrap();
 
     // act
-    let sut = hashed_password.verify("112233");
+    let sut = hashed_password.verify("1aBcD!fg2@");
 
     // assert
     assert!(sut);
@@ -85,7 +85,7 @@ fn return_true_when_verify_password() {
 fn return_false_when_password_dont_match_stored_hash() {
     // arrange
     dotenv::dotenv().ok();
-    let password = "112233";
+    let password = "1aBcD!fg2@";
     let hashed_password = HashedPassword::new(password).unwrap();
 
     // act
@@ -93,4 +93,17 @@ fn return_false_when_password_dont_match_stored_hash() {
 
     // assert
     assert!(!sut);
+}
+
+#[test]
+fn fails_when_not_met_the_required_characters() {
+    // arrange
+    dotenv::dotenv().ok();
+    let invalid_password = "invalid_password";
+
+    // act
+    let hashed_password = HashedPassword::new(invalid_password).unwrap_err();
+
+    // assert
+    assert_eq!(hashed_password, HashedPasswordError::RequiredCharacters);
 }

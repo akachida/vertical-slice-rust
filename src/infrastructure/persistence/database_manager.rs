@@ -133,7 +133,7 @@ impl DatabaseManager for WriteDbContext {
             conn: match sea_orm::Database::connect(&env::var("DATABASE_URL_WRITE").unwrap()).await {
                 Err(error) => {
                     warn!(
-                        "Error while trying to connect to write connection: {}",
+                        "Error while trying to connect to write database context: {}",
                         error.to_string()
                     );
                     None
@@ -152,7 +152,7 @@ impl DatabaseManager for WriteDbContext {
             conn: match sea_orm::Database::connect(&db_connection_string).await {
                 Err(error) => {
                     warn!(
-                        "Error while trying to connect to read connection: {}",
+                        "Error while trying to connect to read database context: {}",
                         error.to_string()
                     );
                     None

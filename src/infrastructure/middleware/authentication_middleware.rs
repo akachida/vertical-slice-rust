@@ -48,11 +48,16 @@ where
     forward_ready!(service);
 
     fn call(&self, request: ServiceRequest) -> Self::Future {
-        let safe_routes = vec!["/", "/api", "/api/auth", "/api/auth/validate"];
+        let public_routes = vec![
+            "/",
+            "/api",
+            "/api/auth",
+            "/api/auth/refresh",
+            "/api/auth/validate",
+        ];
         let req_path = &request.path();
 
-        if safe_routes.contains(req_path) || *request.method() == Method::OPTIONS {
-            info!("Safe route");
+        if public_routes.contains(req_path) || *request.method() == Method::OPTIONS {
             let response = self.service.call(request);
             return Box::pin(
                 async move { response.await.map(ServiceResponse::map_into_left_body) },
@@ -90,8 +95,9 @@ where
                 info!("Unauthorized Access: {}", jwt_error);
                 Box::pin(async move { Ok(unauthorized_access(request).map_into_right_body()) })
             }
-            Ok(token_data) => {
-                request.extensions_mut().insert(token_data.claims);
+            Ok(user_claims) => {
+                // Insert the UserClaims into the request
+                request.extensions_mut().insert(user_claims);
                 let response = self.service.call(request);
                 Box::pin(async move { response.await.map(ServiceResponse::map_into_left_body) })
             }

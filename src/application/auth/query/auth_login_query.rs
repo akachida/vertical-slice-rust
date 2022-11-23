@@ -4,11 +4,11 @@ use serde::{Deserialize, Serialize};
 use crate::{
     domain::user::user::UserTrait,
     infrastructure::{
-        persistence::{database_context::ReadDbContext, database_manager::DatabaseManager},
-        rest::{
-            application_error_response::ApplicationErrorResponse,
-            request_validation::RequestValidation,
+        application_error_response::{
+            ApplicationErrorResponse, DefaultApplicationErrorResponseTrait,
         },
+        persistence::{database_context::ReadDbContext, database_manager::DatabaseManager},
+        rest::request_validation::RequestValidation,
         security::jwt::jwt_helper::JwtHelper,
     },
 };
@@ -24,7 +24,8 @@ pub struct AuthLoginQuery {
 
 #[derive(Debug, Serialize)]
 pub struct AuthLoginQueryResponse {
-    pub token: String,
+    pub auth_token: String,
+    pub refresh_token: String,
 }
 
 #[derive(Debug)]
@@ -64,15 +65,7 @@ impl AuthLoginQueryHandler {
             .await;
 
         if find_user.is_err() {
-            let error = find_user.unwrap_err();
-            log::error!("Error while fetching requested data: {}", error.to_string());
-
-            return Err(ApplicationErrorResponse {
-                message: error.to_string(),
-                error_code: 500,
-                details: vec![],
-                inner: None,
-            });
+            return Err(find_user.unwrap_err().into_application_error_response());
         }
 
         let user = find_user.unwrap();
@@ -81,29 +74,60 @@ impl AuthLoginQueryHandler {
             return Err(ApplicationErrorResponse {
                 message: "Credentials were invalid".to_string(),
                 error_code: 401,
-                details: vec![
-                    "Username or password were invalid".to_string(),
-                    "Account not found".to_string(),
-                ],
+                details: vec!["Account not found".to_string()],
                 inner: None,
             });
         }
 
-        match JwtHelper::generate(&user.unwrap().into_domain()) {
-            Err(jwt_error) => {
-                log::error!(
-                    "Error while converting User data model into Domain model: {}",
-                    jwt_error.to_string()
-                );
+        let user_model = user.unwrap().into_domain();
 
-                Err(ApplicationErrorResponse {
-                    message: jwt_error.to_string(),
-                    error_code: 500,
-                    details: vec![],
-                    inner: None,
-                })
-            }
-            Ok(token) => Ok(AuthLoginQueryResponse { token }),
+        if !user_model.hashed_password().verify(query.password.as_str()) {
+            return Err(ApplicationErrorResponse {
+                message: "Credentials were invalid".to_string(),
+                error_code: 401,
+                details: vec!["Username or password were invalid".to_string()],
+                inner: None,
+            });
         }
+
+        let auth_token = JwtHelper::generate(&user_model);
+        let refresh_token = JwtHelper::generate_refresh_token(&user_model);
+
+        if auth_token.is_err() {
+            let jwt_error = auth_token.unwrap_err();
+
+            log::error!(
+                "Error while generating authentication token: {}",
+                jwt_error.to_string()
+            );
+
+            return Err(ApplicationErrorResponse {
+                message: jwt_error.to_string(),
+                error_code: 500,
+                details: vec![],
+                inner: None,
+            });
+        }
+
+        if refresh_token.is_err() {
+            let jwt_error = refresh_token.unwrap_err();
+
+            log::error!(
+                "Error while generating a refresh token: {}",
+                jwt_error.to_string()
+            );
+
+            return Err(ApplicationErrorResponse {
+                message: jwt_error.to_string(),
+                error_code: 500,
+                details: vec![],
+                inner: None,
+            });
+        }
+
+        Ok(AuthLoginQueryResponse {
+            auth_token: auth_token.unwrap(),
+            refresh_token: refresh_token.unwrap(),
+        })
     }
 }

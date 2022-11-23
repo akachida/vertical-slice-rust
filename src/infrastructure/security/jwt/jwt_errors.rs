@@ -8,4 +8,6 @@ pub enum JwtError {
     InvalidToken,
     #[error("Token creation error")]
     TokenCreationError,
+    #[error("Token expired")]
+    TokenExpired,
 }

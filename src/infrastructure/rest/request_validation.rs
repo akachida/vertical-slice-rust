@@ -1,6 +1,6 @@
-use super::application_error_response::ApplicationErrorResponse;
+use crate::infrastructure::application_error_response::ApplicationErrorResponse;
 
-// TODO: probably should change this to async
+// TIP: for future changes, probably should change this to async
 pub trait RequestValidation {
     fn validate(&self) -> Result<(), ApplicationErrorResponse>;
 }

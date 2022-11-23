@@ -3,7 +3,7 @@ use uuid::Uuid;
 
 use crate::domain::{
     user::user::User,
-    value_objects::{email::Email, hashed_password::HashedPassword, role::Role},
+    value_objects::{email::Email, hashed_password::HashedPassword},
 };
 
 #[test]
@@ -14,8 +14,8 @@ pub fn create_new_user_model() {
     let first_name = "Ângelo";
     let last_name = "Chida";
     let email = Email::new("valid@email.com").unwrap();
-    let role = Role::Admin;
-    let password = HashedPassword::new("123123").unwrap();
+    let role_id = 1;
+    let password = HashedPassword::new("1aBcD!fg2@").unwrap();
     let is_admin = true;
 
     // act
@@ -23,17 +23,18 @@ pub fn create_new_user_model() {
         first_name,
         last_name,
         email.clone(),
-        role,
+        role_id,
         password.clone(),
         is_admin,
     );
 
     // assert
     assert_ne!(sut.id().to_owned(), Uuid::default());
-    assert_eq!(sut.first_name().to_owned(), first_name);
-    assert_eq!(sut.last_name().to_owned(), last_name);
-    assert_eq!(sut.email().to_owned(), email);
-    assert_eq!(sut.hashed_password().to_owned(), password);
+    assert_eq!(sut.role_id(), &role_id);
+    assert_eq!(sut.first_name(), &first_name);
+    assert_eq!(sut.last_name(), &last_name);
+    assert_eq!(sut.email(), &email);
+    assert_eq!(sut.hashed_password(), &password);
     assert_eq!(sut.is_admin(), &is_admin);
     assert_eq!(sut.is_active(), &true);
     assert!(sut.updated_at().is_none());

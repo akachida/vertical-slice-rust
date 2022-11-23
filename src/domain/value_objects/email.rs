@@ -15,13 +15,17 @@ impl Email {
             return Err(EmailError::EmailValueEmpty);
         }
 
-        if EmailAddress::parse(v, None).is_none() {
+        if !Self::validate(v) {
             return Err(EmailError::InvalidEmailFormat);
         }
 
         Ok(Email {
             value: v.to_string(),
         })
+    }
+
+    pub fn validate(v: &str) -> bool {
+        EmailAddress::parse(v, None).is_some()
     }
 }
 

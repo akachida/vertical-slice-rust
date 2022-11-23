@@ -2,6 +2,7 @@ use core::fmt;
 use std::env;
 
 use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version};
+use regex::RegexSet;
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Sha3_256};
 use thiserror::Error;
@@ -12,14 +13,12 @@ pub struct HashedPassword {
 }
 
 impl HashedPassword {
-    pub fn new(v: &str) -> Result<Self, HashedPasswordError> {
-        if v.is_empty() {
-            return Err(HashedPasswordError::EmptyPassword);
-        }
+    pub fn new(value: &str) -> Result<Self, HashedPasswordError> {
+        if let Err(validation_error) = Self::validate(value) {
+            return Err(validation_error);
+        };
 
-        // TODO: add validations for minimum-number, case-sensitive and type of characters
-
-        let salt = format!("{:x}", Sha3_256::digest(v));
+        let salt = format!("{:x}", Sha3_256::digest(value));
         let secret = env::var("PASSWORD_SECRET").unwrap();
 
         let settings = HashedPassword::hash_configuration(&secret);
@@ -30,7 +29,7 @@ impl HashedPassword {
 
         let password_hash = settings
             .unwrap()
-            .hash_password(v.as_bytes(), &salt)
+            .hash_password(value.as_bytes(), &salt)
             .map_err(|_| HashedPasswordError::HashingPassword);
 
         if let Err(password_hash_error) = password_hash {
@@ -42,15 +41,43 @@ impl HashedPassword {
         })
     }
 
-    pub fn new_from_hash(v: &str) -> Result<Self, HashedPasswordError> {
-        let hasher = PasswordHash::try_from(v);
+    pub fn validate(value: &str) -> Result<bool, HashedPasswordError> {
+        if value.is_empty() {
+            return Err(HashedPasswordError::EmptyPassword);
+        }
+
+        if value.len() < 8 {
+            return Err(HashedPasswordError::MinimumCharacters);
+        }
+
+        let required_characters_regex = RegexSet::new(&[
+            r"(.*[a-z]){2,}", // at least 2 uppercase characters
+            r"(.*[A-Z]){2,}", // at lease 2 lowercase characters
+            r"(.*[0-9]){2,}", // at least 2 numeric characters
+            r"(.*[!@#$&*])+", // at least 1 special characters between ! @ # $ & and *
+        ])
+        .unwrap();
+        let regex_matches: Vec<_> = required_characters_regex
+            .matches(&value)
+            .into_iter()
+            .collect();
+
+        if regex_matches.len() != 4 {
+            return Err(HashedPasswordError::RequiredCharacters);
+        }
+
+        Ok(true)
+    }
+
+    pub fn new_from_hash(value: &str) -> Result<Self, HashedPasswordError> {
+        let hasher = PasswordHash::try_from(value);
 
         if hasher.is_err() {
             return Err(HashedPasswordError::InvalidPasswordHash);
         }
 
         Ok(Self {
-            value: v.to_string(),
+            value: value.to_string(),
         })
     }
 
@@ -86,7 +113,7 @@ pub enum HashedPasswordError {
     EmptyPassword,
     #[error("Password doesn't have the minimum characters")]
     MinimumCharacters,
-    #[error("Password don't match the required characters")]
+    #[error("Password doesn't match the required characters")]
     RequiredCharacters,
     #[error("Invalid password hash")]
     InvalidPasswordHash,
