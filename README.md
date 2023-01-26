@@ -73,18 +73,18 @@ sea-orm-cli generate entity -s public -u {connection_string} -o ./entity/src -v
   - [x] refresh token
 - [ ] users
   - [x] Create
-  - [x] Request
+  - [x] Read
   - [ ] Update
   - [ ] Delete
 - [ ] gallery
   - [ ] Create
-  - [ ] Request
+  - [ ] Read
   - [ ] Update
   - [ ] Delete
   - [ ] Ordering
 - [ ] photos
   - [ ] Create
-  - [ ] Request
+  - [ ] Read
   - [ ] Update
   - [ ] Delete
   - [ ] Ordering
@@ -96,7 +96,7 @@ sea-orm-cli generate entity -s public -u {connection_string} -o ./entity/src -v
 - [x] Better error handling
 - [x] Middlewares (Error handling, Auth, Validations...)
 - [x] Separate C/Q validations from C/Q Handlers
-- [ ] Documentation
+- [x] Documentation
 
 ## Give it a try (improvements)
 
