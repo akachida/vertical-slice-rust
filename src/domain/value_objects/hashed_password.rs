@@ -18,7 +18,9 @@ impl HashedPassword {
             return Err(validation_error);
         };
 
-        let salt = format!("{:x}", Sha3_256::digest(value));
+        use argon2::password_hash::{SaltString, Salt};
+        let digest = Sha3_256::digest(value);
+        let salt_string = SaltString::encode_b64(digest.as_slice()).unwrap();
         let secret = env::var("PASSWORD_SECRET").unwrap();
 
         let settings = HashedPassword::hash_configuration(&secret);
@@ -29,7 +31,7 @@ impl HashedPassword {
 
         let password_hash = settings
             .unwrap()
-            .hash_password(value.as_bytes(), &salt)
+            .hash_password(value.as_bytes(), Salt::try_from(salt_string.as_str()).unwrap())
             .map_err(|_| HashedPasswordError::HashingPassword);
 
         if let Err(password_hash_error) = password_hash {
