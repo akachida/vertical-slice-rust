@@ -1,4 +1,4 @@
-use chrono::{DateTime, NaiveDateTime, Utc};
+use chrono::{DateTime, Utc};
 use sea_orm::{prelude::Uuid as SeaUuid, Set};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -133,10 +133,7 @@ impl User {
             is_active: Set(self.is_active),
             is_admin: Set(self.is_admin),
             updated_at: Set(None),
-            created_at: Set(DateTime::<Utc>::from_utc(
-                NaiveDateTime::from_timestamp(Utc::now().timestamp(), 0),
-                Utc,
-            )),
+            created_at: Set(DateTime::from_timestamp(Utc::now().timestamp(), 0).unwrap()),
             last_login_at: Set(None),
         }
     }

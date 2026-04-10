@@ -10,7 +10,9 @@ fn create_new_hashed_password_successfully() {
     // arrange
     dotenv::dotenv().ok();
     let password = "1aBcD!fg2@";
-    let salt = format!("{:x}", Sha3_256::digest(password));
+    use argon2::password_hash::{SaltString, Salt};
+    let digest = Sha3_256::digest(password);
+    let salt_string = SaltString::encode_b64(digest.as_slice()).unwrap();
     let secret = env::var("PASSWORD_SECRET").unwrap();
     let hasher = Argon2::new_with_secret(
         secret.as_bytes(),
@@ -19,7 +21,7 @@ fn create_new_hashed_password_successfully() {
         Params::new(65536, 2, 1, None).unwrap(),
     )
     .unwrap();
-    let password_hash = hasher.hash_password(password.as_bytes(), &salt);
+    let password_hash = hasher.hash_password(password.as_bytes(), Salt::try_from(salt_string.as_str()).unwrap());
     let phc_string = password_hash.unwrap().to_string();
 
     // act

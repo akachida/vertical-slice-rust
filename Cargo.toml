@@ -8,37 +8,40 @@ members = [".", "entity", "migration"]
 
 [dependencies]
 actix-web = "4"
-argon2 = { version = "0.4.1", features = ["std"] }
-async-trait = "0.1.56"
-chrono = "0.4.19"
+argon2 = { version = "0.5.3", features = ["alloc", "password-hash", "rand", "std"] }
+async-trait = "0.1.89"
+chrono = "0.4.44"
 dotenv = "0.15"
-email-address-parser = "1.0.3"
-env_logger = "0.9.0"
+email-address-parser = "2.0.2"
+env_logger = "0.11.10"
 futures = "0.3"
-jsonwebtoken = "8.1.1"
-log = "0.4.17"
-serde = { version = "1.0.130", features = ["derive"] }
+log = "0.4.29"
+serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0"
-sha3 = "0.10.1"
-uuid = { version = "0.8", features = ["serde", "v4"] }
-thiserror = "1.0.31"
-regex = "1.6.0"
+sha3 = "0.11.0"
+uuid = { version = "1.23", features = ["serde", "v4"] }
+thiserror = "2.0.18"
+regex = "1.12.3"
 
 entity = { path = "entity" }
 migration = { path = "migration" }
+password-hash = { version = "0.6.1", features = ["alloc", "rand_core"] }
+hex = "0.4.3"
+base64 = "0.22.1"
+rustls = { version = "0.23.37", features = ["ring"] }
+jsonwebtoken = { version = "10.3.0", features = ["rust_crypto"] }
 
 [dependencies.sea-orm]
-version = "^0.9.1"
+version = "^1.1.20"
 features = [
     "debug-print",
-    "runtime-actix-native-tls",
+    "runtime-actix-rustls",
     "sqlx-postgres",
     "macros",
 ]
 
 [dependencies.actix-web-httpauth]
-git = "https://github.com/actix/actix-extras"
-tag = "httpauth-v0.6.0"
+version = "0.8.2"
 
 [dev-dependencies]
 async-std = { version = "^1", features = ["attributes", "tokio1"] }

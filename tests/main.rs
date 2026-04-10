@@ -18,6 +18,7 @@ async fn teardown(context: ApplicationTestContext) {
 #[async_std::main]
 async fn main() {
     dotenv::dotenv().ok();
+    rustls::crypto::ring::default_provider().install_default().ok();
 
     // integration tests, in caso of need to connect to db
     let context = setup().await;
