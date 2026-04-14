@@ -49,7 +49,3 @@ async-std = { version = "^1", features = ["attributes", "tokio1"] }
 [features]
 integration_tests = []
 
-[[test]]
-name = "tests"
-path = "tests/main.rs"
-harness = false
