@@ -131,3 +131,61 @@ impl AuthLoginQueryHandler {
         })
     }
 }
+use crate::{
+    crate::api::features::auth::login::AuthLoginQuery,
+    infrastructure::application_error_response::ApplicationErrorResponse,
+    infrastructure::rest::request_validation::RequestValidation,
+};
+
+impl RequestValidation for AuthLoginQuery {
+    fn validate(&self) -> Result<(), ApplicationErrorResponse> {
+        let mut error_messages: Vec<String> = Vec::new();
+
+        if self.username.is_empty() {
+            error_messages.append(&mut vec!["Username is required".to_string()]);
+        }
+
+        if self.password.is_empty() {
+            error_messages.append(&mut vec!["Password is required".to_string()]);
+        }
+
+        if !error_messages.is_empty() {
+            return Err(ApplicationErrorResponse {
+                message: "Username or password was not valid".to_string(),
+                error_code: 400,
+                details: error_messages,
+                inner: None,
+            });
+        }
+
+        Ok(())
+    }
+}
+use actix_web::{cookie::Cookie, post, web, HttpResponse, Result};
+use std::ops::Deref;
+
+use crate::{
+    crate::api::features::auth::login::{AuthLoginQuery, AuthLoginQueryHandler},
+    infrastructure::application_error_response::*,
+};
+
+#[post("")]
+pub async fn execute(query: web::Json<AuthLoginQuery>) -> Result<HttpResponse> {
+    let handler = AuthLoginQueryHandler::new().await;
+
+    if handler.is_err() {
+        return handler.unwrap_err().into_http_response();
+    }
+
+    match handler.unwrap().handle(query.deref()).await {
+        Err(error) => error.into_http_response(),
+        Ok(result) => Ok(HttpResponse::Ok()
+            .cookie(
+                Cookie::build("refresh", &result.refresh_token)
+                    .secure(true)
+                    .http_only(true)
+                    .finish(),
+            )
+            .body(serde_json::to_string(&result.auth_token)?)),
+    }
+}

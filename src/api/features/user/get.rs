@@ -102,3 +102,80 @@ impl GetUserQueryHandler {
         })
     }
 }
+use crate::{
+    crate::api::features::user::get::GetUserQuery,
+    infrastructure::{
+        application_error_response::ApplicationErrorResponse,
+        rest::request_validation::RequestValidation,
+    },
+};
+
+impl RequestValidation for GetUserQuery {
+    fn validate(&self) -> Result<(), ApplicationErrorResponse> {
+        if self.id.is_nil() {
+            return Err(ApplicationErrorResponse {
+                message: "Error while validating GetUser request".to_string(),
+                error_code: 400,
+                details: vec!["ID should not be empty".to_string()],
+                inner: None,
+            });
+        }
+
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use uuid::Uuid;
+
+    use crate::{
+        crate::api::features::user::get::GetUserQuery,
+        infrastructure::rest::request_validation::RequestValidation,
+    };
+
+    #[test]
+    pub fn validation_error_if_id_is_nil() {
+        // arrange
+        let query = GetUserQuery { id: Uuid::nil() };
+
+        // act
+        let sut = query.validate().unwrap_err();
+
+        // assert
+        assert_eq!(
+            sut.message,
+            "Error while validating GetUser request".to_string()
+        );
+        assert_eq!(sut.error_code, 400);
+        assert_eq!(sut.details, vec!["ID should not be empty".to_string()]);
+        assert!(sut.inner.is_none())
+    }
+}
+use actix_web::{get, web, HttpResponse, Result};
+use uuid::Uuid;
+
+use crate::{
+    crate::api::features::user::get::{GetUserQuery, GetUserQueryHandler},
+    infrastructure::application_error_response::ApplicationErrorResponseTrait,
+};
+
+#[get("{id}")]
+pub async fn execute(path: web::Path<(Uuid,)>) -> Result<HttpResponse> {
+    let handler = GetUserQueryHandler::new().await;
+
+    if handler.is_err() {
+        return handler.unwrap_err().into_http_response();
+    }
+
+    let query = GetUserQuery {
+        id: path.into_inner().0,
+    };
+    let response = handler.unwrap().handle(&query).await;
+
+    if response.is_err() {
+        return response.unwrap_err().into_http_response();
+    }
+
+    Ok(HttpResponse::Ok().body(serde_json::to_string(&response.unwrap())?))
+}

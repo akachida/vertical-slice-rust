@@ -1,6 +1,6 @@
 use crate::{
     infrastructure::security::jwt::jwt_helper::JwtHelper,
-    presentation::rest::default_response::DefaultResponse,
+    api::default_response::DefaultResponse,
 };
 use actix_web::{
     body::EitherBody,
